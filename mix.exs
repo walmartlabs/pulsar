@@ -15,7 +15,8 @@ defmodule Walmart.Pulsar.Mixfile do
   def application do
     [
       extra_applications: [:logger],
-      mod: {Walmart.Pulsar.Application, []}
+      mod: {Walmart.Pulsar.Application, nil},
+      registered: [Walmart.Pulsar.DashboardServer]
     ]
   end
 

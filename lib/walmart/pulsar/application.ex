@@ -8,13 +8,11 @@ defmodule Walmart.Pulsar.Application do
   def start(_type, _args) do
     # List all child processes to be supervised
     children = [
-      # Starts a worker by calling: Walmart.Pulsar.Worker.start_link(arg)
-      # {Walmart.Pulsar.Worker, arg},
+      {Walmart.Pulsar.DashboardServer, name: Walmart.Pulsar.DashboardServer}
     ]
 
-    # See https://hexdocs.pm/elixir/Supervisor.html
-    # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: Walmart.Pulsar.Supervisor]
-    Supervisor.start_link(children, opts)
+    {:ok, _} = Supervisor.start_link(children, 
+      strategy: :one_for_one, 
+      name: Walmart.Pulsar.Supervisor)
   end
 end
