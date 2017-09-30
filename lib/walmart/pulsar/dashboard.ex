@@ -52,7 +52,7 @@ end
     newlines(dashboard.new_jobs)
 
     for {_, model} <- dashboard.jobs do
-      if model.dirty do
+      if model.dirty and model.job.message do
         IO.write  [
           T.cursor_invisible(),
           T.save_cursor_position(),

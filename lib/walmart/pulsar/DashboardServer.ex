@@ -11,6 +11,10 @@ defmodule Walmart.Pulsar.DashboardServer do
 
   @flush_interval 100
 
+  def start_link(state) do
+    GenServer.start_link(__MODULE__, state, name: __MODULE__)
+  end
+
   def init(_) do
     ping()
     {:ok, %{dashboard: D.new_dashboard(), jobid: 1}}
@@ -18,7 +22,7 @@ defmodule Walmart.Pulsar.DashboardServer do
 
   def terminate(_reason, state) do
     # TODO: Shutdown the dashboard properly, marking all jobs as complete
-    D.flush(state)
+    D.flush(state.dashboard)
   end
 
   # -- requests sent from the client --
