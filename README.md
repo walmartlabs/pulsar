@@ -21,3 +21,8 @@ Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_do
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
 be found at [https://hexdocs.pm/pulsar](https://hexdocs.pm/pulsar).
 
+
+## Indentation
+
+Sorry about that, indentation is all over the place due to limitations in
+(how I have configured) Sublime.
