@@ -1,4 +1,4 @@
-defmodule Walmart.Pulsar.Dashboard do
+defmodule Pulsar.Dashboard do
   @moduledoc """
   The logic for managing a set of jobs and updating them.
   """

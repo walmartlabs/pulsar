@@ -1,4 +1,4 @@
-defmodule Walmart.Pulsar.Dashboard.Terminal do
+defmodule Pulsar.Dashboard.Terminal do
   @moduledoc """
   Functions to handle termcap style screen rendering.
 

@@ -1,6 +1,6 @@
-defmodule Walmart.Pulsar.DashboardServer do
+defmodule Pulsar.DashboardServer do
 
-  alias Walmart.Pulsar.Dashboard, as: D
+  alias Pulsar.Dashboard, as: D
 
   @moduledoc """
   Responsible for managing a Dashboard, updating it based on received messages, and

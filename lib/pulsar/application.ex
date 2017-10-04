@@ -1,4 +1,4 @@
-defmodule Walmart.Pulsar.Application do
+defmodule Pulsar.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   @moduledoc false
@@ -8,11 +8,11 @@ defmodule Walmart.Pulsar.Application do
   def start(_type, _args) do
     # List all child processes to be supervised
     children = [
-      {Walmart.Pulsar.DashboardServer, name: Walmart.Pulsar.DashboardServer}
+      {Pulsar.DashboardServer, name: Pulsar.DashboardServer}
     ]
 
     {:ok, _} = Supervisor.start_link(children, 
       strategy: :one_for_one, 
-      name: Walmart.Pulsar.Supervisor)
+      name: Pulsar.Supervisor)
   end
 end

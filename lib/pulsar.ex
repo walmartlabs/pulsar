@@ -1,9 +1,9 @@
-defmodule Walmart.Pulsar do
+defmodule Pulsar do
   @moduledoc """
   This is the client API for Pulsar.
   """
 
-  @app_name Walmart.Pulsar.DashboardServer
+  @app_name Pulsar.DashboardServer
 
   def new_job() do
    request_new_job(@app_name)
