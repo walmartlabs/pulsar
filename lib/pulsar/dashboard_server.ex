@@ -17,13 +17,15 @@ defmodule Pulsar.DashboardServer do
   end
 
   def init(_) do
-    ping()
+    enqueue_flush()
     {:ok, D.new_dashboard(@active_highlight_interval)}
   end
 
   def terminate(_reason, state) do
     # TODO: Shutdown the dashboard properly, marking all jobs as complete
-    D.flush(state)
+    {_, output} = D.flush(state)
+
+    IO.write(output)
   end
 
   # -- requests sent from the client --
@@ -31,36 +33,36 @@ defmodule Pulsar.DashboardServer do
   def handle_call(:job, _from, state) do
     jobid = System.unique_integer()
 
-    enqueue_clear_inactive()
-
     {:reply, jobid, D.update_job(state, jobid)}
   end
 
   def handle_cast({:update, jobid, message}, state) do
     # TODO: This is an ugly way to handle updates,  Maybe an API
     # like update_job(dashboard, jobid, key/values) ?
+    # Also, updates to unknown jobs should go into the aether, not recreate them
     job = %D.Job{message: message}
     
-    enqueue_clear_inactive()
-
     {:noreply,  D.update_job(state, jobid, job)}
   end
 
+  def handle_cast({:complete, jobid}, state) do
+    {:noreply, D.complete_job(state, jobid)}
+  end
+
   def handle_info(:flush, state) do
-    ping()
-    {:noreply, D.flush(state)}
+    enqueue_flush()
+
+    {dashboard, output} = state 
+    |> D.clear_inactive()
+    |> D.flush()
+
+    IO.write(output)
+
+    {:noreply, dashboard}
   end
 
-  def handle_info(:clear_inactive, state) do
-    {:noreply, D.clear_inactive(state)}
-  end
-
-  defp ping() do
+  defp enqueue_flush() do
     Process.send_after(self(), :flush, @flush_interval)
-  end
-
-  defp enqueue_clear_inactive() do
-    Process.send_after(self(), :clear_inactive, @active_highlight_interval)
   end
 
 end
