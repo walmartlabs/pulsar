@@ -1,6 +1,23 @@
 defmodule Pulsar do
   @moduledoc """
   This is the client API for Pulsar.
+
+  Pulsar manages a simple text-mode dashboard of jobs. 
+
+  Jobs can be updated at any time; updates appear *in place*.
+
+  When a job is updated, it will briefly be repainted in bold and/or bright text,
+  then be redrawn in standard text. 
+  This is to draw attention to changes.
+
+  Completed jobs 
+
+  Pulsar has no way to determine if other output is occuring, even logging (to the console).
+  Pulsar is appropriate to generally short-lived applications such as command line tools,
+  that ensure that output, including logging, is directed away from the console.
+
+
+
   """
 
   @app_name Pulsar.DashboardServer
@@ -36,7 +53,7 @@ end
 
 @doc """
 Completes a previously created job. No further updates to the job
-should be sent.be
+should be sent.
 
 Returns :ok.
 """

@@ -4,8 +4,10 @@ defmodule Pulsar.Dashboard do
   """
 
   alias IO.ANSI
-
+ 
   defmodule Job do
+    @moduledoc false
+
     defstruct message: nil
   end
 
@@ -98,6 +100,7 @@ def complete_job(dashboard = %__MODULE__{}, jobid) do
 
     new_model = %{model | dirty: true,
     line: active_line,
+    active: true,
     active_until: active_until(dashboard)}
     |> Map.put(:completed, true)
 
