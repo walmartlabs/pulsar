@@ -12,8 +12,6 @@ defmodule Pulsar.Dashboard.Terminal do
   def cursor_up(lines) do
   if lines > 0 do
     <<0x1b, 0x5b>> <> to_string(lines) <> <<0x41>>
-  else
-    ""
   end
 end
 

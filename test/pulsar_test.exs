@@ -1,5 +1,5 @@
 defmodule PulsarTest do
   use ExUnit.Case
-  doctest Walmart.Pulsar
+  doctest Pulsar
 
 end
