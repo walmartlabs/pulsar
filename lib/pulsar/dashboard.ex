@@ -196,7 +196,7 @@ end
     %{dashboard | jobs: f.(dashboard.jobs)}
   end
 
-  def update_each_job(dashboard , f) do
+  defp update_each_job(dashboard , f) do
     update_jobs(dashboard, & map_values(&1, f))
   end
 
