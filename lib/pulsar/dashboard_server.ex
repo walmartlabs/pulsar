@@ -33,7 +33,7 @@ defmodule Pulsar.DashboardServer do
   def handle_call(:job, _from, state) do
     jobid = System.unique_integer()
 
-    {:reply, jobid, D.update_job(state, jobid)}
+    {:reply, jobid, D.add_job(state, jobid)}
   end
 
   def handle_cast({:update, jobid, message}, state) do

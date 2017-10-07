@@ -10,10 +10,10 @@ defmodule Pulsar.Dashboard.Terminal do
   def save_cursor_position, do: <<0x1b, 0x37>> # sc
 
   def cursor_up(lines) do
-  if lines > 0 do
-    <<0x1b, 0x5b>> <> to_string(lines) <> <<0x41>>
+    if lines > 0 do
+      <<0x1b, 0x5b>> <> to_string(lines) <> <<0x41>>
+    end
   end
-end
 
   def leftmost_column(), do: <<0x1b, 0x5b, 0x31, 0x47>> # hpa 0
 
