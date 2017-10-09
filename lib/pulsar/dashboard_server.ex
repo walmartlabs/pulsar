@@ -39,12 +39,7 @@ defmodule Pulsar.DashboardServer do
   end
 
   def handle_cast({:update, jobid, message}, state) do
-    # TODO: This is an ugly way to handle updates,  Maybe an API
-    # like update_job(dashboard, jobid, key/values) ?
-    # Also, updates to unknown jobs should go into the aether, not recreate them
-    job = %D.Job{message: message}
-
-    {:noreply,  D.update_job(state, jobid, job)}
+    {:noreply, D.update_job(state, jobid, message: message)}
   end
 
   def handle_cast({:complete, jobid}, state) do

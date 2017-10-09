@@ -39,21 +39,16 @@ defmodule DashboardTest do
     |> flush()
 
     assert messages(dashboard) == ["second", "third", "first"]
-
   end
 
   defp add_job(dashboard, id, message) do
     D.add_job(dashboard, id)
-    |> D.update_job(id, job(message))
+    |> D.update_job(id, message: message)
   end
 
   defp flush(dashboard) do
     {new_dashboard, _} = D.flush(dashboard)
     new_dashboard
-  end
-
-  defp job(message) do
-    %D.Job{message: message}
   end
 
   defp messages(dashboard) do

@@ -15,6 +15,8 @@ defmodule Pulsar.Dashboard do
   # new_jobs is a count of the number of jobs added since the most recent flush, e.g., number of new lines to print on next flush
   defstruct jobs: %{}, new_jobs: 0, active_highlight_ms: 0
 
+  @empty_job %{message: nil}
+
   @doc """
   Creates a new, empty dashboard.
 
@@ -32,17 +34,24 @@ defmodule Pulsar.Dashboard do
 
   If the job does not exist, or is marked completed, the dashboard is returned unchanged.
 
+  `job_data` is a keyword list of changes to make to the job.  Supported keys are:
+
+  * :message
+
   Returns the updated dashboard.
   """
-  def update_job(dashboard = %__MODULE__{}, jobid, job) when job != nil do
+  def update_job(dashboard = %__MODULE__{}, jobid, job_data) do
 
     model = dashboard.jobs[jobid]
 
     if model && not(model.completed) do
+      new_job = Enum.reduce(job_data, model.job, fn {k, v}, j ->
+        Map.put(j, k, v)
+      end)
       new_model = %{model | dirty: true,
       active: true,
       active_until: active_until(dashboard),
-      job: job}
+      job: new_job}
 
       Map.update!(dashboard, :jobs, &(Map.put &1, jobid, new_model))
     else
@@ -65,7 +74,7 @@ defmodule Pulsar.Dashboard do
         active: true,
         completed: false,
         active_until: active_until(dashboard),
-        job: nil
+        job: @empty_job
       }
 
       updater = fn (jobs) ->
