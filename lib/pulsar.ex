@@ -10,13 +10,18 @@ defmodule Pulsar do
   then be redrawn in standard text.
   This is to draw attention to changes.
 
-  Completed jobs
+  Completed jobs bubble up above any incomplete jobs.
 
-  Pulsar has no way to determine if other output is occuring, even logging (to the console).
+  Jobs may have a status, which drives font color.  Normal jobs are in white.
+  Jobs with status `:ok` are in green.
+  Jobs with status `:error` are in red.
+
+  Note that the actual colors are driven by the configuration of your terminal.
+
+  Pulsar has no way to determine if other output is occuring.
+  Care should be taken that logging is redirected to a file.
   Pulsar is appropriate to generally short-lived applications such as command line tools,
-  that ensure that output, including logging, is directed away from the console.
-
-
+  who can ensure that output, including logging, is directed away from the console.
 
   """
 
@@ -65,6 +70,7 @@ defmodule Pulsar do
 
   @doc """
   Updates the status of the job.
+  `status` should be `:normal`, `:ok`, or `:error`.
 
   Returns the job.
   """
