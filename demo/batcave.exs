@@ -1,4 +1,4 @@
-defmodule PulsarDemo do
+defmodule Batcave do
 
   def sleep(ms), do: Process.sleep(ms)
 
@@ -56,4 +56,4 @@ defmodule PulsarDemo do
 end
 
 
-PulsarDemo.run()
+Batcave.run()
