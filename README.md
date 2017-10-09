@@ -23,6 +23,18 @@ Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_do
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
 be found at [https://hexdocs.pm/pulsar](https://hexdocs.pm/pulsar).
 
+## limitations
+
+Pulsar doesn't know the dimensions on the screen; large numbers of jobs in
+a short window will not render correctly.
+Likewise, long lines that wrap will cause incorrect output.
+
+Pulsar is hard-coded for for xterm; it should use the terminal capabilities
+database to identify what command codes generate each effect.
+
+Pulsar doesn't have any way to prevent other output to the console;
+that will cause confusing output.
+
 ## License
 
 Released under the Apache Software License 2.0.
