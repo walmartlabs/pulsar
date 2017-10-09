@@ -7,12 +7,20 @@ defmodule Pulsar.DashboardServer do
   periodically flushing it to output.
 
   The `Pulsar` module is the client API for creating and updating jobs.
+
+  The `:pulsar` application defines two configuration values:
+
+  * `:flush_interval` - interval at which output is written to the console
+
+  * `:active_highlight_duration` - how long an updated job is "bright"
+
+  Both values are in milliseconds.
+
+  Updates to jobs accumluate between flushes; this reduces the amount of output
+  that must be written.
   """
 
   use GenServer
-
-  @flush_interval 100  # milliseconds
-  @active_highlight_interval 1000  # milliseconds
 
   def start_link(state) do
     GenServer.start_link(__MODULE__, state, name: __MODULE__)
@@ -20,7 +28,7 @@ defmodule Pulsar.DashboardServer do
 
   def init(_) do
     enqueue_flush()
-    {:ok, D.new_dashboard(@active_highlight_interval)}
+    {:ok, D.new_dashboard(Application.get_env(:pulsar, :active_highlight_duration))}
   end
 
   def terminate(_reason, state) do
@@ -63,7 +71,7 @@ defmodule Pulsar.DashboardServer do
   end
 
   defp enqueue_flush() do
-    Process.send_after(self(), :flush, @flush_interval)
+    Process.send_after(self(), :flush, Application.get_env(:pulsar, :flush_interval))
   end
 
 end

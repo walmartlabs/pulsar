@@ -2,7 +2,7 @@ defmodule Pulsar.Mixfile do
   use Mix.Project
 
   def project do
-    [ 
+    [
       app: :pulsar,
       version: "0.1.0",
       elixir: "~> 1.5",
@@ -16,7 +16,10 @@ defmodule Pulsar.Mixfile do
     [
       extra_applications: [:logger],
       mod: {Pulsar.Application, nil},
-      registered: [Pulsar.DashboardServer]
+      registered: [Pulsar.DashboardServer],
+      env: [
+        flush_interval: 100,
+        active_highlight_duration: 1000],
     ]
   end
 

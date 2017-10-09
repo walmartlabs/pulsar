@@ -7,19 +7,19 @@ defmodule Pulsar.Dashboard do
 
   # jobs is a map from job id to job model
   # new_jobs is a count of the number of jobs added since the most recent flush, e.g., number of new lines to print on next flush
-  defstruct jobs: %{}, new_jobs: 0, active_highlight_ms: 0
+  defstruct jobs: %{}, new_jobs: 0, active_highlight_duration: 0
 
   @empty_job %{message: nil, status: :normal}
 
   @doc """
   Creates a new, empty dashboard.
 
-  `active_highlight_ms` is the number of milliseconds that a newly added or updated job
+  `active_highlight_duration` is the number of milliseconds that a newly added or updated job
   should be rendered as active (bright).  `clear_inactive` is used periodically to identify
   jobs that should be downgraded to inactive and re-rendered.
   """
-  def new_dashboard(active_highlight_ms) when active_highlight_ms > 0 do
-    %__MODULE__{active_highlight_ms: active_highlight_ms}
+  def new_dashboard(active_highlight_duration) when active_highlight_duration > 0 do
+    %__MODULE__{active_highlight_duration: active_highlight_duration}
   end
 
 
@@ -228,6 +228,6 @@ defmodule Pulsar.Dashboard do
     end
 
     defp active_until(dashboard) do
-      System.system_time(:milliseconds) + dashboard.active_highlight_ms
+      System.system_time(:milliseconds) + dashboard.active_highlight_duration
     end
   end
