@@ -7,19 +7,24 @@ defmodule Pulsar.Mixfile do
       version: "0.1.0",
       elixir: "~> 1.5",
       start_permanent: Mix.env == :prod,
-      deps: deps()
+      deps: deps(),
+      package: package(),
+
+      description: description(),
+      source_url: "https://github.com/walmartlabs/pulsar",
+      name: "Pulsar",
     ]
   end
 
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger],
       mod: {Pulsar.Application, nil},
       registered: [Pulsar.DashboardServer],
       env: [
         flush_interval: 100,
-        active_highlight_duration: 1000],
+        active_highlight_duration: 1000
+      ]
     ]
   end
 
@@ -31,5 +36,19 @@ defmodule Pulsar.Mixfile do
       # {:dep_from_hexpm, "~> 0.3.0"},
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"},
     ]
+  end
+
+  defp package do
+    [
+      maintainers: ["Howard M. Lewis Ship"],
+      licenses: ["Apache 2.0"],
+      links: %{"GitHub" => "https://github.com/walmartlabs/pulsar"}
+    ]
+  end
+
+  defp description() do
+    """
+    A text-based, dynamic dashboard. Jobs update in place, using xterm command codes.
+    """
   end
 end
