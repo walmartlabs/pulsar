@@ -45,9 +45,7 @@ defmodule Pulsar.Dashboard do
     model = dashboard.jobs[jobid]
 
     if model && not(model.completed) do
-      new_job = Enum.reduce(job_data, model.job, fn {k, v}, j ->
-        Map.put(j, k, v)
-      end)
+      new_job = Enum.into(job_data, model.job)
       new_model = %{model | dirty: true,
       active: true,
       active_until: active_until(dashboard),
