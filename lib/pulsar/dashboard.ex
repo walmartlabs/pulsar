@@ -192,9 +192,14 @@ defmodule Pulsar.Dashboard do
       |> Enum.reject(&nil?/1)
       |> Enum.into(new_job_lines)
 
-      new_dashboard = dashboard
-      |> Map.put(:new_jobs, 0)
-      |> update_each_job(&Map.put(&1, :dirty, false))
+
+      # Inactive completed jobs can go now, everything else
+      # has been flushed to screen and is no longer dirty.
+      new_jobs = dashboard.jobs
+      |> reject_values(fn m -> m.completed && not(m.active) end)
+      |> map_values(fn m -> %{m | dirty: false} end)
+
+      new_dashboard = %{dashboard | jobs: new_jobs, new_jobs: 0}
 
       {new_dashboard, all_chunks}
     end
@@ -206,12 +211,18 @@ defmodule Pulsar.Dashboard do
     defp move_each_job_up(jobs) do
       # This shifts "up" all existing lines but *does not* mark them dirty
       # (because they are on the screen just like they should be).
-      map_values(jobs, fn model -> update_in model.line, &(&1 + 1)  end)
+      map_values(jobs, fn model -> update_in model.line, &(&1 + 1) end)
     end
 
     defp map_values(m = %{}, f) do
       m
       |> Enum.map(fn {k, v} -> {k, f.(v)} end)
+      |> Enum.into(%{})
+    end
+
+    defp reject_values(m = %{}, f) do
+      m
+      |> Enum.reject(fn {_, v} -> f.(v) end)
       |> Enum.into(%{})
     end
 
