@@ -32,7 +32,7 @@ defmodule DashboardTest do
     # TODO: Eventually, flush() is going to remove completed jobs as well, once
     # they are no longer active.
 
-    assert messages(dashboard) == ["second", "first", "third"]  
+    assert messages(dashboard) == ["second", "first", "third"]
 
     dashboard = dashboard
     |> D.complete_job(3)
@@ -53,14 +53,14 @@ defmodule DashboardTest do
   end
 
   defp job(message) do
-   %D.Job{message: message}
- end
+    %D.Job{message: message}
+  end
 
- defp messages(dashboard) do
-  dashboard.jobs
-  |> Map.values()
-  |> Enum.sort_by(fn m -> m.line end, &>=/2)
-  |> Enum.map(fn m -> m.job.message end)
-end
+  defp messages(dashboard) do
+    dashboard.jobs
+    |> Map.values()
+    |> Enum.sort_by(fn m -> m.line end, &>=/2)
+    |> Enum.map(fn m -> m.job.message end)
+  end
 
 end

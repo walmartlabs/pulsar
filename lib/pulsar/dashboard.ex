@@ -44,7 +44,7 @@ defmodule Pulsar.Dashboard do
       active_until: active_until(dashboard),
       job: job}
 
-      Map.put(dashboard.jobs, jobid, new_model)
+      Map.update!(dashboard, :jobs, &(Map.put &1, jobid, new_model))
     else
       dashboard
     end

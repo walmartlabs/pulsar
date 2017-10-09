@@ -11,8 +11,8 @@ defmodule Pulsar.Application do
       {Pulsar.DashboardServer, name: Pulsar.DashboardServer}
     ]
 
-    {:ok, _} = Supervisor.start_link(children, 
-      strategy: :one_for_one, 
-      name: Pulsar.Supervisor)
+    {:ok, _} = Supervisor.start_link(children,
+    strategy: :one_for_one,
+    name: Pulsar.Supervisor)
   end
 end

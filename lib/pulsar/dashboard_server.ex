@@ -5,6 +5,8 @@ defmodule Pulsar.DashboardServer do
   @moduledoc """
   Responsible for managing a Dashboard, updating it based on received messages, and
   periodically flushing it to output.
+
+  The `Pulsar` module is the client API for creating and updating jobs.
   """
 
   use GenServer
@@ -41,7 +43,7 @@ defmodule Pulsar.DashboardServer do
     # like update_job(dashboard, jobid, key/values) ?
     # Also, updates to unknown jobs should go into the aether, not recreate them
     job = %D.Job{message: message}
-    
+
     {:noreply,  D.update_job(state, jobid, job)}
   end
 
@@ -52,7 +54,7 @@ defmodule Pulsar.DashboardServer do
   def handle_info(:flush, state) do
     enqueue_flush()
 
-    {dashboard, output} = state 
+    {dashboard, output} = state
     |> D.clear_inactive()
     |> D.flush()
 
