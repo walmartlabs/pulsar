@@ -5,17 +5,11 @@ defmodule Pulsar.Dashboard do
 
   alias IO.ANSI
 
-  defmodule Job do
-    @moduledoc false
-
-    defstruct message: nil
-  end
-
   # jobs is a map from job id to job model
   # new_jobs is a count of the number of jobs added since the most recent flush, e.g., number of new lines to print on next flush
   defstruct jobs: %{}, new_jobs: 0, active_highlight_ms: 0
 
-  @empty_job %{message: nil}
+  @empty_job %{message: nil, status: :normal}
 
   @doc """
   Creates a new, empty dashboard.
@@ -36,7 +30,8 @@ defmodule Pulsar.Dashboard do
 
   `job_data` is a keyword list of changes to make to the job.  Supported keys are:
 
-  * :message
+  * `:message` - a string
+  * `:status` - an atom, one of `:normal`, `:error`, or `:ok`
 
   Returns the updated dashboard.
   """
@@ -173,15 +168,25 @@ defmodule Pulsar.Dashboard do
           T.save_cursor_position(),
           T.cursor_up(model.line),
           T.leftmost_column(),
-          (if model.active, do: ANSI.bright()),
+          (case {model.active, model.job.status} do
+            {true, :error} -> ANSI.light_red()
+            {_, :error} -> ANSI.red()
+            {true, :ok} -> ANSI.light_green()
+            {_, :ok} -> ANSI.green()
+            {true, _} -> ANSI.light_white()
+            _ -> nil
+          end),
           model.job.message,
           T.clear_to_end(),
           T.restore_cursor_position(),
-          T.cursor_visible()]
+          T.cursor_visible()
+        ]
         end
       end
 
-      all_lines = dirty_job_groups
+      # IO.write hates nils, so we have to filter out nil groups,
+      # and nil chunks.
+      all_chunks = dirty_job_groups
       |> Enum.reject(&nil?/1)
       |> Enum.reduce([], &Enum.into/2)
       |> Enum.reject(&nil?/1)
@@ -191,7 +196,7 @@ defmodule Pulsar.Dashboard do
       |> Map.put(:new_jobs, 0)
       |> update_each_job(&Map.put(&1, :dirty, false))
 
-      {new_dashboard, all_lines}
+      {new_dashboard, all_chunks}
     end
 
     # -- PRIVATE --

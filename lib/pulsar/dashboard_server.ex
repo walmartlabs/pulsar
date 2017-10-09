@@ -46,6 +46,10 @@ defmodule Pulsar.DashboardServer do
     {:noreply, D.complete_job(state, jobid)}
   end
 
+  def handle_cast({:status, jobid, status}, state) do
+    {:noreply, D.update_job(state, jobid, status: status)}
+  end
+
   def handle_info(:flush, state) do
     enqueue_flush()
 

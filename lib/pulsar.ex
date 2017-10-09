@@ -44,22 +44,34 @@ defmodule Pulsar do
   This will cause the job's line in the dashboard to update, and will briefly be
   highlighted.
 
-  Returns :ok
+  Returns the job.
   """
   def message(job, message) do
     {process, jobid} = job
     GenServer.cast(process, {:update, jobid, message})
+    job
   end
 
   @doc """
   Completes a previously created job. No further updates to the job
   should be sent.
 
-  Returns :ok.
+  Returns the job.
   """
   def complete(job) do
     {process, jobid} = job
     GenServer.cast(process, {:complete, jobid})
+  end
+
+  @doc """
+  Updates the status of the job.
+
+  Returns the job.
+  """
+  def status(job, status) do
+    {process, jobid} = job
+    GenServer.cast(process, {:status, jobid, status})
+    job
   end
 
   defp request_new_job(server) do
