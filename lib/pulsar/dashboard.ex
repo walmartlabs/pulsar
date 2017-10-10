@@ -5,11 +5,9 @@ defmodule Pulsar.Dashboard do
 
   alias IO.ANSI
 
-  # jobs is a map from job id to job model
+  # jobs is a map from job id to job
   # new_jobs is a count of the number of jobs added since the most recent flush, e.g., number of new lines to print on next flush
   defstruct jobs: %{}, new_jobs: 0, active_highlight_duration: 0
-
-  @empty_job %{message: nil, status: :normal}
 
   @doc """
   Creates a new, empty dashboard.
@@ -37,16 +35,14 @@ defmodule Pulsar.Dashboard do
   """
   def update_job(dashboard = %__MODULE__{}, jobid, job_data) do
 
-    model = dashboard.jobs[jobid]
+    job = dashboard.jobs[jobid]
 
-    if model && not(model.completed) do
-      new_job = Enum.into(job_data, model.job)
-      new_model = %{model | dirty: true,
+    if job && not(job.completed) do
+      new_job = Enum.into(job_data, %{job | dirty: true,
       active: true,
-      active_until: active_until(dashboard),
-      job: new_job}
+      active_until: active_until(dashboard)})
 
-      Map.update!(dashboard, :jobs, &(Map.put &1, jobid, new_model))
+      put_in(dashboard.jobs[jobid], new_job)
     else
       dashboard
     end
@@ -61,19 +57,20 @@ defmodule Pulsar.Dashboard do
     if Map.has_key?(dashboard.jobs, jobid) do
       dashboard
     else
-      model = %{
+      job = %{
+        status: :normal,
+        message: nil,
         dirty: true,
         line: 1,
         active: true,
         completed: false,
         active_until: active_until(dashboard),
-        job: @empty_job
       }
 
       updater = fn (jobs) ->
         jobs
         |> move_each_job_up()
-        |> Map.put(jobid, model)
+        |> Map.put(jobid, job)
       end
 
       dashboard
@@ -91,11 +88,11 @@ defmodule Pulsar.Dashboard do
   """
   def complete_job(dashboard = %__MODULE__{}, jobid) when jobid != nil do
     jobs = dashboard.jobs
-    model = jobs[jobid]
-    unless model && not(model.completed) do
+    job = jobs[jobid]
+    unless job && not(job.completed) do
       dashboard # job gone or missing
     else
-      line = model.line
+      line = job.line
       active_line = jobs
       |> Map.values()
       |> Enum.reject(fn m -> m.completed end)
@@ -110,7 +107,7 @@ defmodule Pulsar.Dashboard do
         end
       end
 
-      new_model = %{model | dirty: true,
+      new_job = %{job | dirty: true,
       completed: true,
       line: active_line,
       active: true,
@@ -118,7 +115,7 @@ defmodule Pulsar.Dashboard do
 
       new_jobs = jobs
       |> map_values(fix_line_number)
-      |> Map.put(jobid, new_model)
+      |> Map.put(jobid, new_job)
 
       Map.put(dashboard, :jobs, new_jobs)
     end
@@ -160,15 +157,14 @@ defmodule Pulsar.Dashboard do
       for _ <- 1..dashboard.new_jobs, do: "\n"
     end
 
-    dirty_job_groups = for {_, model} <- dashboard.jobs do
-      if model.dirty and model.job.message do
+    dirty_job_groups = for {_, job} <- dashboard.jobs do
+      if job.dirty do
         [
-          ANSI.reset(),
           T.cursor_invisible(),
           T.save_cursor_position(),
-          T.cursor_up(model.line),
+          T.cursor_up(job.line),
           T.leftmost_column(),
-          (case {model.active, model.job.status} do
+          (case {job.active, job.status} do
             {true, :error} -> ANSI.light_red()
             {_, :error} -> ANSI.red()
             {true, :ok} -> ANSI.light_green()
@@ -176,10 +172,11 @@ defmodule Pulsar.Dashboard do
             {true, _} -> ANSI.light_white()
             _ -> nil
           end),
-          model.job.message,
+          job.message,
           T.clear_to_end(),
           T.restore_cursor_position(),
-          T.cursor_visible()
+          T.cursor_visible(),
+          ANSI.reset()
         ]
         end
       end
@@ -211,7 +208,7 @@ defmodule Pulsar.Dashboard do
     defp move_each_job_up(jobs) do
       # This shifts "up" all existing lines but *does not* mark them dirty
       # (because they are on the screen just like they should be).
-      map_values(jobs, fn model -> update_in model.line, &(&1 + 1) end)
+      map_values(jobs, fn model -> update_in(model.line, &(&1 + 1)) end)
     end
 
     defp map_values(m = %{}, f) do

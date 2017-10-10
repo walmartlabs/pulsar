@@ -55,7 +55,7 @@ defmodule DashboardTest do
     dashboard.jobs
     |> Map.values()
     |> Enum.sort_by(fn m -> m.line end, &>=/2)
-    |> Enum.map(fn m -> m.job.message end)
+    |> Enum.map(fn m -> m.message end)
   end
 
 end
