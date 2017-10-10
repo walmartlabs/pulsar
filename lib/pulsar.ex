@@ -80,6 +80,21 @@ defmodule Pulsar do
     job
   end
 
+  @doc """
+  Sets the prefix for the job; this immediately precedes the message.
+  Generally, the prefix provides a job with a title.
+
+  There is no seperator between the prefix and the message, a prefix
+  typically ends with ": " or "- ".
+
+  Returns the job.
+  """
+  def prefix(job, prefix) do
+    {process, jobid} = job
+    GenServer.cast(process, {:prefix, jobid, prefix})
+    job
+  end
+
   defp request_new_job(server) do
     process = GenServer.whereis(server)
     {process, GenServer.call(process, :job)}

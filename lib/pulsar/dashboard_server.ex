@@ -58,6 +58,10 @@ defmodule Pulsar.DashboardServer do
     {:noreply, D.update_job(state, jobid, status: status)}
   end
 
+  def handle_cast({:prefix, jobid, prefix}, state) do
+    {:noreply, D.update_job(state, jobid, prefix: prefix)}
+  end
+
   def handle_info(:flush, state) do
     enqueue_flush()
 

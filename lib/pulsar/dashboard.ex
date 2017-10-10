@@ -29,6 +29,7 @@ defmodule Pulsar.Dashboard do
   `job_data` is a keyword list of changes to make to the job.  Supported keys are:
 
   * `:message` - a string
+  * `:prefix` - a string
   * `:status` - an atom, one of `:normal`, `:error`, or `:ok`
 
   Returns the updated dashboard.
@@ -59,6 +60,7 @@ defmodule Pulsar.Dashboard do
     else
       job = %{
         status: :normal,
+        prefix: nil,
         message: nil,
         dirty: true,
         line: 1,
@@ -172,6 +174,7 @@ defmodule Pulsar.Dashboard do
             {true, _} -> ANSI.light_white()
             _ -> nil
           end),
+          job.prefix,
           job.message,
           T.clear_to_end(),
           T.restore_cursor_position(),
