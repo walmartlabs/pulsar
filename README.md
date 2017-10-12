@@ -1,4 +1,6 @@
-# Walmart.Pulsar
+# Pulsar
+
+[![Hex.pm](https://img.shields.io/hexpm/v/Pulsar.svg)](https://hex.pm/packages/pulsar)
 
 Pulsar is a text-based, dynamic dashboard that lets processes communicate their status.
 Jobs can be created, updated, and completed asynchronously, and update in-place.
@@ -6,10 +8,11 @@ This is intended for use in Elixir applications that run as command line tools.
 
 ![Demo](demo/pulsar-demo.gif)
 
+[API Documentation](https://hexdocs.pm/pulsar/api-reference.html)
+
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `pulsar` to your list of dependencies in `mix.exs`:
+The package can be installed by adding `pulsar` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
@@ -18,18 +21,13 @@ def deps do
   ]
 end
 ```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/pulsar](https://hexdocs.pm/pulsar).
-
 ## limitations
 
 Pulsar doesn't know the dimensions on the screen; large numbers of jobs in
 a short window will not render correctly.
 Likewise, long lines that wrap will cause incorrect output.
 
-Pulsar is hard-coded for for xterm; it should use the terminal capabilities
+Pulsar is currently hard-coded for xterm; in the future it will use the terminal capabilities
 database to identify what command codes generate each effect.
 
 Pulsar doesn't have any way to prevent other output to the console;
