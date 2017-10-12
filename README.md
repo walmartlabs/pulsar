@@ -6,7 +6,7 @@ Pulsar is a text-based, dynamic dashboard that lets processes communicate their 
 Jobs can be created, updated, and completed asynchronously, and update in-place.
 This is intended for use in Elixir applications that run as command line tools.
 
-![Demo](demo/pulsar-demo.gif)
+![Demo](assets/pulsar-demo.gif)
 
 [API Documentation](https://hexdocs.pm/pulsar/api-reference.html)
 
@@ -21,7 +21,7 @@ def deps do
   ]
 end
 ```
-## limitations
+## Limitations
 
 Pulsar doesn't know the dimensions on the screen; large numbers of jobs in
 a short window will not render correctly.

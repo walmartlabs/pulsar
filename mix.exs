@@ -9,6 +9,7 @@ defmodule Pulsar.Mixfile do
       start_permanent: Mix.env == :prod,
       deps: deps(),
       package: package(),
+      docs: docs(),
 
       description: description(),
       source_url: "https://github.com/walmartlabs/pulsar",
@@ -50,5 +51,13 @@ defmodule Pulsar.Mixfile do
     """
     A text-based, dynamic dashboard. Jobs update in place, using xterm command codes.
     """
+  end
+
+  def docs() do
+    [
+      source_url: "http://github.com/walmartlabs/pulsar",
+      extras: ["README.md", "CHANGES.md"],
+      assets: "assets"
+    ]
   end
 end
