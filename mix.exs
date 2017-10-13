@@ -25,7 +25,7 @@ defmodule Pulsar.Mixfile do
       env: [
         flush_interval: 100,
         active_highlight_duration: 1000
-      ]
+      ],
     ]
   end
 
@@ -33,9 +33,6 @@ defmodule Pulsar.Mixfile do
   defp deps do
     [
       {:ex_doc, "~> 0.16", only: :dev, runtime: false},
-
-      # {:dep_from_hexpm, "~> 0.3.0"},
-      # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"},
     ]
   end
 
@@ -57,7 +54,7 @@ defmodule Pulsar.Mixfile do
     [
       source_url: "http://github.com/walmartlabs/pulsar",
       extras: ["README.md", "CHANGES.md"],
-      assets: "assets"
+      assets: "assets",
     ]
   end
 end

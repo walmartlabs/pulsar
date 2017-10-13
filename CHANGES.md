@@ -1,6 +1,6 @@
 # Release History
 
-## 0.2.0 -- UNRELEASED
+## 0.2.0 -- 13 Oct 2017
 
 Added `Pulsar.prefix/2`: set a prefix displayed immediately before the job message.
 
