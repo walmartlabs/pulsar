@@ -39,21 +39,23 @@ defmodule Batcave do
 
   def run() do
 
+    n = 2  # tuning factor
+
     tasks = [
-      Task.async(__MODULE__, :timed, ["Atomic turbines to speed", 3000]),
-      Task.async(__MODULE__, :progress, ["Rotating Batmobile platform", 180, 35]),
-      Task.async(__MODULE__, :timed, ["Initializing on-board Bat=computer", 1800]),
-      Task.async(__MODULE__, :progress, ["Loading Bat-fuel", 15, 250])
+      Task.async(__MODULE__, :timed, ["Atomic turbines to speed", n * 2000]),
+      Task.async(__MODULE__, :progress, ["Rotating Batmobile platform", 180, n * 25]),
+      Task.async(__MODULE__, :timed, ["Initializing on-board Bat-computer", n * 3000]),
+      Task.async(__MODULE__, :progress, ["Loading Bat-fuel rods", 5, n * 750])
     ]
 
-    sleep(1000)
+    sleep(n * 2500)
     Pulsar.pause()
     IO.write(
     """
            _,    _   _    ,_
       .o888P     Y8o8Y     Y888o.
      d88888      88888      88888b
-    d888888b_  _d88888b_  _d888888b    On-Board Bat-Computer Online
+    d888888b_  _d88888b_  _d888888b    Booting On-Board Bat-Computer ...
     8888888888888888888888888888888
     8888888888888888888888888888888
     YJGS8P"Y888P"Y888P"Y888P"Y8888P

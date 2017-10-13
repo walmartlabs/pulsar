@@ -8,6 +8,14 @@ This is intended for use in Elixir applications that run as command line tools.
 
 ![Demo](assets/pulsar-demo.gif)
 
+Jobs have a lifecycle: they are created, periodically updated, and eventually completed.
+Whenever a job is updated, it is highlighted for one second using bright, bold text.
+
+In the above demo, completed jobs were also set to status `:ok`, which displays them in green.
+
+Completed jobs bubble up above non-completed jobs (this may change in a later release
+as it can be a bit disconcerting).
+
 [API Documentation](https://hexdocs.pm/pulsar/api-reference.html)
 
 ## Installation
@@ -23,7 +31,7 @@ end
 ```
 ## Limitations
 
-Pulsar doesn't know the dimensions on the screen; large numbers of jobs in
+Pulsar doesn't know the dimensions of the screen; large numbers of jobs in
 a short window will not render correctly.
 Likewise, long lines that wrap will cause incorrect output.
 
@@ -31,7 +39,8 @@ Pulsar is currently hard-coded for xterm; in the future it will use the terminal
 database to identify what command codes generate each effect.
 
 Pulsar doesn't have any way to prevent other output to the console;
-that will cause confusing output.
+that will cause confusing output unless `Pulsar.pause/0` and `Pulsar.resume/0` are
+used.
 
 ## License
 
