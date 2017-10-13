@@ -38,12 +38,30 @@ defmodule Batcave do
   end
 
   def run() do
+
     tasks = [
       Task.async(__MODULE__, :timed, ["Atomic turbines to speed", 3000]),
       Task.async(__MODULE__, :progress, ["Rotating Batmobile platform", 180, 35]),
-      Task.async(__MODULE__, :timed, ["Initializing on-board Bat computer", 1800]),
-      Task.async(__MODULE__, :progress, ["Loading Bat-fuel", 15, 250]),
+      Task.async(__MODULE__, :timed, ["Initializing on-board Bat=computer", 1800]),
+      Task.async(__MODULE__, :progress, ["Loading Bat-fuel", 15, 250])
     ]
+
+    sleep(1000)
+    Pulsar.pause()
+    IO.write(
+    """
+           _,    _   _    ,_
+      .o888P     Y8o8Y     Y888o.
+     d88888      88888      88888b
+    d888888b_  _d88888b_  _d888888b    On-Board Bat-Computer Online
+    8888888888888888888888888888888
+    8888888888888888888888888888888
+    YJGS8P"Y888P"Y888P"Y888P"Y8888P
+     Y888   '8'   Y8P   '8'   888Y
+      '8o          V          o8'
+        `                     `
+    """)
+    Pulsar.resume()
 
     for task <- tasks, do: Task.await(task, 20000)
 

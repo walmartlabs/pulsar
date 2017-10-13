@@ -17,7 +17,9 @@ defmodule Pulsar.Dashboard.Terminal do
 
   def leftmost_column(), do: <<0x1b, 0x5b, 0x31, 0x47>> # hpa 0
 
-  def clear_to_end(), do: <<0x1b, 0x5b, 0x4b>> # el
+  def clear_to_eol(), do: <<0x1b, 0x5b, 0x4b>> # ce
+
+  def clear_to_eos, do:  <<0x1b, 0x5b, 0x4a>> # cd
 
   def restore_cursor_position(), do: <<0x1b, 0x38>> # rc
 

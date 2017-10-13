@@ -4,6 +4,7 @@ defmodule Pulsar.Dashboard do
   """
 
   alias IO.ANSI
+  alias __MODULE__.Terminal, as: T
 
   # jobs is a map from job id to job
   # new_jobs is a count of the number of jobs added since the most recent flush, e.g., number of new lines to print on next flush
@@ -149,8 +150,6 @@ defmodule Pulsar.Dashboard do
   """
   def flush(dashboard=%__MODULE__{}) do
 
-    alias __MODULE__.Terminal, as: T
-
     # When there are new jobs, add blank lines to the output for those new jobs
 
     new_job_lines = if dashboard.new_jobs == 0 do
@@ -176,7 +175,7 @@ defmodule Pulsar.Dashboard do
           end),
           job.prefix,
           job.message,
-          T.clear_to_end(),
+          T.clear_to_eol(),
           T.restore_cursor_position(),
           T.cursor_visible(),
           ANSI.reset()
@@ -202,6 +201,37 @@ defmodule Pulsar.Dashboard do
       new_dashboard = %{dashboard | jobs: new_jobs, new_jobs: 0}
 
       {new_dashboard, all_chunks}
+    end
+
+    @doc """
+    A variant of flush used to temporarily shut down the dashboard before
+    some other output.
+
+    Returns a tuple of the updated dashboard, and output.
+
+    The output moves the cursor to the top line of the dashboard,
+    then clears to the end of the screen. This temporarily removes
+    the dashboard from visibility, so that other output can be produced.
+
+    The returned dashboard is configured so that the next call to `flush/1`
+    will add new lines for all jobs, and repaint all lines (e.g., as if
+    every job was freshly added).
+    """
+    def pause(dashboard=%__MODULE__{}) do
+      lines = Enum.count(dashboard.jobs) - dashboard.new_jobs
+      output = if lines > 0 do
+        [
+          T.leftmost_column(),
+          T.cursor_up(lines),
+          T.clear_to_eos()
+        ]
+      end
+
+      new_dashboard = dashboard
+      |> update_each_job(fn job -> put_in(job.dirty, true) end)
+      |> Map.put(:new_jobs, Enum.count(dashboard.jobs))
+
+      {new_dashboard, output}
     end
 
     # -- PRIVATE --

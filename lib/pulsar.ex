@@ -81,6 +81,42 @@ defmodule Pulsar do
   end
 
   @doc """
+  Pauses the dashboard.
+
+  The dashboard will clear itself when paused.
+  Console output can then be written.
+
+  Returns :ok, after the dashboard is cleared.
+
+  To restore normal behavior to the dashboard, invoke `resume/0`.
+  """
+  def pause() do
+    GenServer.call(@app_name, :pause)
+  end
+
+  @doc """
+  Pauses the dashboard on the indicated node.
+  """
+  def pause(node) do
+    GenServer.call({@app_name, node}, :pause)
+  end
+
+  @doc """
+  Resumes the dashboard after a `pause/0`.
+  """
+
+  def resume() do
+    GenServer.cast(@app_name, :resume)
+  end
+
+  @doc """
+  Resumes the dashboard after a `pause/1`.
+  """
+  def resume(node) do
+    GenServer.cast({@app_name, node}, :resume)
+  end
+
+  @doc """
   Sets the prefix for the job; this immediately precedes the message.
   Generally, the prefix provides a job with a title.
 

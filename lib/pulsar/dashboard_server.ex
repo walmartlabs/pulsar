@@ -28,12 +28,15 @@ defmodule Pulsar.DashboardServer do
 
   def init(_) do
     enqueue_flush()
-    {:ok, D.new_dashboard(Application.get_env(:pulsar, :active_highlight_duration))}
+
+    dashboard =  D.new_dashboard(Application.get_env(:pulsar, :active_highlight_duration))
+
+    {:ok, %{dashboard: dashboard, paused: false}}
   end
 
   def terminate(_reason, state) do
     # TODO: Shutdown the dashboard properly, marking all jobs as complete
-    {_, output} = D.flush(state)
+    {_, output} = D.flush(state.dashboard)
 
     IO.write(output)
   end
@@ -43,39 +46,64 @@ defmodule Pulsar.DashboardServer do
   def handle_call(:job, _from, state) do
     jobid = System.unique_integer()
 
-    {:reply, jobid, D.add_job(state, jobid)}
+    {:reply, jobid, update_in(state.dashboard, &(D.add_job(&1, jobid)))}
+  end
+
+  def handle_call(:pause, _from, state) do
+    if state.paused do
+      {:reply, :ok, state}
+    end
+      {new_dashboard, output} = D.pause(state.dashboard)
+      IO.write(output)
+      {:reply, :ok, %{state | dashboard: new_dashboard, paused: true}}
+  end
+
+  def handle_cast(:resume, state) do
+    {:noreply, %{state | paused: false}}
   end
 
   def handle_cast({:update, jobid, message}, state) do
-    {:noreply, D.update_job(state, jobid, message: message)}
+    update_job(state, jobid, message: message)
   end
 
   def handle_cast({:complete, jobid}, state) do
-    {:noreply, D.complete_job(state, jobid)}
+    {:noreply, update_in(state.dashboard, &(D.complete_job(&1, jobid)))}
   end
 
   def handle_cast({:status, jobid, status}, state) do
-    {:noreply, D.update_job(state, jobid, status: status)}
+    update_job(state, jobid, status: status)
   end
 
   def handle_cast({:prefix, jobid, prefix}, state) do
-    {:noreply, D.update_job(state, jobid, prefix: prefix)}
+    update_job(state, jobid, prefix: prefix)
   end
+
+  # -- internal callbacks
 
   def handle_info(:flush, state) do
     enqueue_flush()
 
-    {dashboard, output} = state
-    |> D.clear_inactive()
-    |> D.flush()
+    if state.paused do
+      {:noreply, state}
+    else
+      {new_dashboard, output} = state.dashboard
+      |> D.clear_inactive()
+      |> D.flush()
 
-    IO.write(output)
+      IO.write(output)
 
-    {:noreply, dashboard}
+      {:noreply, %{state | dashboard: new_dashboard}}
+    end
+
   end
 
   defp enqueue_flush() do
     Process.send_after(self(), :flush, Application.get_env(:pulsar, :flush_interval))
+  end
+
+  defp update_job(state, jobid, job_data) do
+    new_dashboard = D.update_job(state.dashboard, jobid, job_data)
+    {:noreply, %{state | dashboard: new_dashboard}}
   end
 
 end
