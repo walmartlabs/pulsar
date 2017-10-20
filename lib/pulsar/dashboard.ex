@@ -95,29 +95,12 @@ defmodule Pulsar.Dashboard do
     unless job && not(job.completed) do
       dashboard # job gone or missing
     else
-      line = job.line
-      active_line = jobs
-      |> Map.values()
-      |> Enum.reject(fn m -> m.completed end)
-      |> Enum.map(fn m -> m.line end)
-      |> Enum.max(constantly(1))
-
-      fix_line_number = fn m ->
-        if m.line <= active_line and m.line > line do
-          %{m | line: m.line - 1, dirty: true}
-        else
-          m
-        end
-      end
-
       new_job = %{job | dirty: true,
       completed: true,
-      line: active_line,
       active: true,
       active_until: active_until(dashboard)}
 
       new_jobs = jobs
-      |> map_values(fix_line_number)
       |> Map.put(jobid, new_job)
 
       Map.put(dashboard, :jobs, new_jobs)
@@ -128,7 +111,7 @@ defmodule Pulsar.Dashboard do
   Invoked periodically to clear the active flag of any job that has not been updated recently.
   Inactive jobs are marked dirty, to force a redisplay.
   """
-  def clear_inactive(dashboard = %__MODULE__{}) do
+  def update(dashboard = %__MODULE__{}) do
     now = System.system_time(:milliseconds)
 
     updater = fn (job) ->
@@ -191,12 +174,24 @@ defmodule Pulsar.Dashboard do
       |> Enum.reject(&nil?/1)
       |> Enum.into(new_job_lines)
 
+      incomplete_line = dashboard.jobs
+      |> Map.values()
+      |> Enum.reject(fn m -> m.completed end)
+      |> Enum.map(fn m -> m.line end)
+      |> Enum.reduce(0, &max/2)
 
-      # Inactive completed jobs can go now, everything else
-      # has been flushed to screen and is no longer dirty.
-      new_jobs = dashboard.jobs
-      |> reject_values(fn m -> m.completed && not(m.active) end)
-      |> map_values(fn m -> %{m | dirty: false} end)
+      # Everything has been flushed to screen and is no longer dirty.
+      # Inactive, completed lines above incomplete_line are no longer
+      # needed.
+      new_jobs = Enum.reduce(dashboard.jobs,
+       %{},
+       fn {jobid, job}, m ->
+          if job.completed && not(job.active) && job.line > incomplete_line do
+            m
+          else
+            Map.put(m, jobid, %{job | dirty: false})
+          end
+        end)
 
       new_dashboard = %{dashboard | jobs: new_jobs, new_jobs: 0}
 
@@ -250,22 +245,12 @@ defmodule Pulsar.Dashboard do
       |> Enum.into(%{})
     end
 
-    defp reject_values(m = %{}, f) do
-      m
-      |> Enum.reject(fn {_, v} -> f.(v) end)
-      |> Enum.into(%{})
-    end
-
     defp update_jobs(dashboard = %__MODULE__{}, f) do
       %{dashboard | jobs: f.(dashboard.jobs)}
     end
 
     defp update_each_job(dashboard , f) do
       update_jobs(dashboard, & map_values(&1, f))
-    end
-
-    defp constantly(x) do
-      fn -> x end
     end
 
     defp active_until(dashboard) do

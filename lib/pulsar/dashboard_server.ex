@@ -87,7 +87,7 @@ defmodule Pulsar.DashboardServer do
       {:noreply, state}
     else
       {new_dashboard, output} = state.dashboard
-      |> D.clear_inactive()
+      |> D.update()
       |> D.flush()
 
       IO.write(output)

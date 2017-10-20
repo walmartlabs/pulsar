@@ -21,26 +21,6 @@ defmodule DashboardTest do
     assert messages(dashboard) == ["first", "second"]
   end
 
-  test "completed jobs bubble up" do
-    dashboard = @root
-    |> add_job(1, "first")
-    |> add_job(2, "second")
-    |> add_job(3, "third")
-    |> D.complete_job(2)
-    |> flush()
-
-    # TODO: Eventually, flush() is going to remove completed jobs as well, once
-    # they are no longer active.
-
-    assert messages(dashboard) == ["second", "first", "third"]
-
-    dashboard = dashboard
-    |> D.complete_job(3)
-    |> flush()
-
-    assert messages(dashboard) == ["second", "third", "first"]
-  end
-
   defp add_job(dashboard, id, message) do
     D.add_job(dashboard, id)
     |> D.update_job(id, message: message)
